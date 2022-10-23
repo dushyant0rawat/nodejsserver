@@ -10,3 +10,9 @@ add certificate to the root store. Certutil require administer permissions so ru
 certutil -addstore root cert.pem  
 
 remove certificate button is greyed in chrome unless chrome was run as administrator  
+
+run the following commands openssl commands to create x509 certificate  
+*openssl genrsa -out key.pem  
+*openssl req -new -key key.pem -out csr.pem  
+*openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem  -extfile extfile.cnf  
+*certutil -addstore root cert.perm  
