@@ -16,3 +16,14 @@ run the following commands openssl commands to create x509 certificate
 * openssl req -new -key key.pem -out csr.pem  
 * openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem  -extfile extfile.cnf  
 * certutil -addstore root cert.perm  
+
+Couldn't install self certificate without root to /system/etc/security/cacerts/ on android for use in flutter app.
+so loaded cert.pem to the asset folder in flutter app to be used in httpclient of dart.io package.  
+
+PKCS#12(PKCS12 or PFX)  is a binary format for storing a certificate chain and private key in a single file,, encryptable file. To create pkcs12 using openssl git is  
+winpty openssl pkcs12 -inkey key.pem -in cert.pem -export -out keystore.p12  
+
+To output p12 certificate:  
+winpty openssl pkcs12 -info -in keystore.p12  
+
+gitbash hangs if winpty is not used before openssl.  
