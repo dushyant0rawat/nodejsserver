@@ -15,7 +15,7 @@ run the following commands openssl commands to create x509 certificate
 * openssl genrsa -out key.pem  
 * openssl req -new -key key.pem -out csr.pem  
 * openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem  -extfile extfile.cnf  
-* certutil -addstore root cert.perm  
+* certutil -addstore root cert.pem  
 
 Couldn't install self certificate without root to /system/etc/security/cacerts/ on android for use in flutter app.
 so loaded cert.pem to the asset folder in flutter app to be used in httpclient of dart.io package.  
