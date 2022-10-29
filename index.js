@@ -9,7 +9,8 @@
 //  return res.end();
 //  });
 //
-// }).listen(443, "0.0.0.0");
+// }).listen(80, "0.0.0.0");
+
 
 var https = require('https');
 var fs = require('fs');
@@ -26,5 +27,4 @@ https.createServer(options,function (req,res) {
  return res.end();
  });
 
-//}).listen(8080);
 }).listen(443, "0.0.0.0");

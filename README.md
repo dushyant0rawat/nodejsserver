@@ -27,3 +27,5 @@ To output p12 certificate:
 winpty openssl pkcs12 -info -in keystore.p12  
 
 gitbash hangs if winpty is not used before openssl.  
+
+In order to access the node.js website on private network from public network, do port forwarding on the router and enable "Node.js JavaScript Runtime" in windows firewall defender.
