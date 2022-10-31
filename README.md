@@ -28,4 +28,13 @@ winpty openssl pkcs12 -info -in keystore.p12
 
 gitbash hangs if winpty is not used before openssl.  
 
-In order to access the node.js website on private network from public network, do port forwarding on the router and enable "Node.js JavaScript Runtime" in windows firewall defender.
+In order to access the node.js website on private network from public network, do port forwarding on the router and enable "Node.js JavaScript Runtime" in windows firewall defender.   
+
+[Let's Encrypt trusted certificates](https://www.howtoforge.com/getting-started-with-acmesh-lets-encrypt-client/)
+Let’s Encrypt (LE) is a certificate authority (CA) that offers free and automated SSL/TLS certificates, with the goal of encrypting the entire web. If you own a domain name and have shell access to your server you can utilize Let's Encrypt to obtain a trusted certificate at no cost. Let's Encrypt can issue SAN certs for up to 100 hostnames and wildcard certificates.  
+
+Acme.sh installation  
+curl https://get.acme.sh | sh  
+
+Issue an SSL cert   
+acme.sh --issue -d example.com -d www.example.com -d mail.example.com --webroot /var/www/example.com  
