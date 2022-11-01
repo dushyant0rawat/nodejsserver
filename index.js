@@ -13,13 +13,15 @@ const options = {
 
 
 const debug = true;
+const CHUNK_SIZE = 10 ** 6;
 const httpServer = http.createServer(options,function (req,res) {
+  console.log(`remote ip: ${req.headers['x-forwarded-for']} ${req.socket?.remoteaAddress}`);
   // path.join normalizes the path
  let filePath = path.join(
         __dirname,
         req.url === "/" ? "yt.html" : req.url
     );
-    console.log("joined path is " + filePath);
+
  let ext = path.extname(filePath);
  let contentType = 'text/html';
 
@@ -36,6 +38,9 @@ const httpServer = http.createServer(options,function (req,res) {
        case '.png':
            contentType = 'image/png';
            break;
+      case '.mp4':
+            contentType = 'video/mp4';
+            break;
        case '.jpg':
            contentType = 'image/jpg';
            break;
@@ -53,18 +58,71 @@ const httpServer = http.createServer(options,function (req,res) {
 //    res.end(`<h1>illegal characte in + ${req.url}</h1>`);
 //  }
 
-fs.readFile(filePath,function(err,data){
-  if(err) {
-    console.log('type of data:' + typeof data);
-    console.log(`error occured in reading file ${filePath}`);
-    res.writeHead(404, { 'content-type': 'text/html' });
-    res.write('<h1>error loading page</h1>');
-  } else {
-    res.writeHead(200, { 'content-type': contentType });
-    res.write(data);
-  }
- res.end();
-});
+//full download of .mp4 doesn't work on iphone and ipad
+
+if (ext != ".mp4") {
+  fs.readFile(filePath,function(err,data){
+    if(err) {
+      console.log('type of data:' + typeof data);
+      console.log(`error occured in reading file ${filePath}`);
+      res.writeHead(404, { 'content-type': 'text/html' });
+      res.write('<h1>error loading page</h1>');
+    } else {
+      res.writeHead(200, { 'content-type': contentType});
+      res.write(data);
+    }
+   res.end();
+  });
+} else {
+  fs.stat(filePath, function(err, stats) {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        // 404 Error if file not found
+        return res.sendStatus(404);
+      }
+    res.end(err);
+    }
+    var range = req.headers.range;
+    if (!range) {
+     // 416 Wrong range
+     return res.sendStatus(416);
+    }
+    console.log("range is:" + range);
+    var total = stats.size;
+    // let positions = range.replace(/bytes=/, "").split("-");
+    // let start = parseInt(positions[0], 10);
+    // let end = positions[1] ? parseInt(positions[1], 10) : total - 1;
+    // const end = Math.min(start + CHUNK_SIZE, total - 1);
+    let [start,end] = range.replace(/bytes=/, "").split("-");
+    start = parseInt(start, 10);
+    end = end ? parseInt(end, 10) : total - 1;
+    if(!isNaN(start) && isNaN(end)){
+      start = start;
+      end = size -1;
+
+    }
+    if(isNaN(start) && !isNaN(end)){
+      start = size -end;
+      end = size -1;
+    }
+    console.log(`start: ${start}  end: ${end}`);
+    var chunksize = (end - start) + 1;
+
+    res.writeHead(206, {
+      "Content-Range": "bytes " + start + "-" + end + "/" + total,
+      "Accept-Ranges": "bytes",
+      "Content-Length": chunksize,
+      "Content-Type": "video/mp4"
+    });
+
+    var stream = fs.createReadStream(filePath, { start: start, end: end })
+      .on("open", function() {
+        stream.pipe(res);
+      }).on("error", function(err) {
+        res.end(err);
+      });
+  });
+}
 
 });
 httpServer.listen(port, "0.0.0.0");
