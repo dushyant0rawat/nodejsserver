@@ -3,12 +3,12 @@ var fs = require('fs');
 
 var url = require('url');
 var path = require('path');
+const requestIp = require('request-ip');
 
-// const port = 80;
 const port = 443;
 const options = {
-  key: fs.readFileSync('c-73-54-168-143.hsd1.ga.comcast.net.key'),
-  cert: fs.readFileSync('c-73-54-168-143.hsd1.ga.comcast.net.cer')
+  key: fs.readFileSync('dushyantrawat.com.key'),
+  cert: fs.readFileSync('dushyantrawat.com.cer')
 };
 
 
@@ -16,6 +16,8 @@ const debug = true;
 const CHUNK_SIZE = 10 ** 6;
 const httpServer = http.createServer(options,function (req,res) {
   console.log(`remote ip: ${req.headers['x-forwarded-for']} ${req.socket?.remoteaAddress}`);
+  console.log(req.headers);
+  console.log(`ip from request-ip is ${requestIp.getClientIp(req)}`);
   // path.join normalizes the path
  let filePath = path.join(
         __dirname,
@@ -127,6 +129,21 @@ if (ext != ".mp4") {
 });
 httpServer.listen(port, "0.0.0.0");
 
+//immediately invoked function expression
+console.log = (function() {
+  var console_log = console.log;
+  var timeStart = new Date().getTime();
+
+  return function() {
+    var delta = new Date().getTime() -timeStart ;
+    var args = [];
+    args.push((delta / 1000).toFixed(2) + ':');
+    for(var i = 0; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+    console_log.apply(console, args);
+  };
+})();
 
 // var https = require('https');
 // var fs = require('fs');

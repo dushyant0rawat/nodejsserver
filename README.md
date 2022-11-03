@@ -38,3 +38,5 @@ curl https://get.acme.sh | sh
 
 Issue an SSL cert   
 acme.sh --issue -d example.com -d www.example.com -d mail.example.com --webroot /var/www/example.com  
+
+remember to not use spaces in the directory name of the webroot otherwise client can't write to the acme-challenge directory and verification would fail with return code 404. Finally able to find after many tries using --debug flag in acme.sh that client was trying to write to 'websites' instead of 'my websites'. So changing the directory to my-websites(without spaces) made acme.sh issue the certificates.
