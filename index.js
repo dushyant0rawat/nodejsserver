@@ -1,18 +1,16 @@
 var http = require('https');
 var fs = require('fs');
-
 var url = require('url');
 var path = require('path');
 const requestIp = require('request-ip');
 
+const debug = false;
 const port = 443;
 const options = {
   key: fs.readFileSync('dushyantrawat.com.key'),
   cert: fs.readFileSync('dushyantrawat.com.cer')
 };
 
-
-const debug = true;
 const CHUNK_SIZE = 10 ** 6;
 const httpServer = http.createServer(options,function (req,res) {
   console.log(`remote ip: ${req.headers['x-forwarded-for']} ${req.socket?.remoteaAddress}`);
@@ -131,13 +129,18 @@ httpServer.listen(port, "0.0.0.0");
 
 //immediately invoked function expression
 console.log = (function() {
+
+
   var console_log = console.log;
-  var timeStart = new Date().getTime();
+  // var timeStart = new Date().getTime();
 
   return function() {
-    var delta = new Date().getTime() -timeStart ;
+      if(!debug) return;
+    // var delta = new Date().getTime() -timeStart ;
+    var currTime = new Date().toLocaleString();
     var args = [];
-    args.push((delta / 1000).toFixed(2) + ':');
+    // args.push((delta / 1000).toFixed(2) + ':');
+    args.push('[' + currTime + ']');
     for(var i = 0; i < arguments.length; i++) {
       args.push(arguments[i]);
     }
