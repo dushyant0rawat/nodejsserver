@@ -2,9 +2,11 @@ var http = require('https');
 var fs = require('fs');
 var url = require('url');
 var path = require('path');
-const requestIp = require('request-ip');
+// const requestIp = require('request-ip');
 
-const debug = false;
+const DEBUG = true;
+// console.log(module);
+
 const port = 443;
 const options = {
   key: fs.readFileSync('dushyantrawat.com.key'),
@@ -13,9 +15,9 @@ const options = {
 
 const CHUNK_SIZE = 10 ** 6;
 const httpServer = http.createServer(options,function (req,res) {
-  console.log(`remote ip: ${req.headers['x-forwarded-for']} ${req.socket?.remoteaAddress}`);
-  console.log(req.headers);
-  console.log(`ip from request-ip is ${requestIp.getClientIp(req)}`);
+  console.log(`remote ip: ${req.headers['x-forwarded-for']} ${req.socket?.remoteAddress}` );
+  console.log(`req headers ${req.headers}`);
+  // console.log(`ip from request-ip is ${requestIp.getClientIp(req)}`);
   // path.join normalizes the path
  let filePath = path.join(
         __dirname,
@@ -123,12 +125,11 @@ if (ext != ".mp4") {
       });
   });
 }
-
 });
 httpServer.listen(port, "0.0.0.0");
 
 //immediately invoked function expression
-console.log = (function() {
+console.log = (function(debug) {
 
 
   var console_log = console.log;
@@ -146,7 +147,16 @@ console.log = (function() {
     }
     console_log.apply(console, args);
   };
-})();
+})(DEBUG);
+
+// Redirect from http port 80 to https
+var http = require('http');
+http.createServer(function (req, res) {
+    console.log("listening on port 80 and now redirecting to https");
+    res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+    res.end();
+}).listen(80, "0.0.0.0");
+
 
 // var https = require('https');
 // var fs = require('fs');
