@@ -6,7 +6,7 @@ var path = require('path');
 
 const DEBUG = true;
 // console.log(module);
-
+this is test branch
 const port = 443;
 const options = {
   key: fs.readFileSync('dushyantrawat.com.key'),
@@ -16,6 +16,8 @@ const options = {
 const CHUNK_SIZE = 10 ** 6;
 const httpServer = http.createServer(options,function (req,res) {
   console.log(`remote ip: ${req.headers['x-forwarded-for']} ${req.socket?.remoteAddress}` );
+  console.log(`req method ${req.method}`);
+  console.log(`req header content type ${req.headers['content-type']}`);
   console.log(`req headers ${req.headers}`);
   // console.log(`ip from request-ip is ${requestIp.getClientIp(req)}`);
   // path.join normalizes the path
