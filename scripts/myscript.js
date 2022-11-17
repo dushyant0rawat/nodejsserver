@@ -7,7 +7,8 @@ $(function() {
           console.log("customEvent triggered");
         });
        $( "#delete_update_comments_div" ).on("submit",".delete_update_comments_form",bindForm);
-       $( "#delete_update_comments_div" ).on("keydown keyup",'textarea',resize);
+       $( "#delete_update_comments_div" ).on("keyup keydown focus",'textarea',resize);
+       $( ".insert_comment_form" ).on("keyup keydown focus",'textarea',resize);
        $("#delete_update_comments_div" ).trigger("customEvent");
 });
 
@@ -38,8 +39,8 @@ function getComments(){
   $.post("/",
        {"type":"get" },
        function(data, status){
+        console.log("data and status is", data,status);
        if(status==='success'){
-         console.log("data and status is", data,status);
          let json = JSON.parse(data);
          console.log("data and status is", typeof json,json,status);
          for (let key in json) {
@@ -98,9 +99,9 @@ function bindForm(e){
 
 function resize() {
   console.log("in resizetextara");
-  const innerHeight =$(this).prop('scrollHeight');
-  const height =$(this).height();
-  console.log("size is:",innerHeight,height);
-  // $(this).height(innerHeight);
+  const scrollHeight =$(this).prop('scrollHeight');
+  const padding = $(this).innerHeight() - $(this).height();
+  const newInnerHeight = scrollHeight- padding;
+  $(this).height(newInnerHeight);
 
 }

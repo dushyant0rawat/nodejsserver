@@ -17,7 +17,7 @@ video {
  textarea {
   resize: none;
   margin: 0;
-  /* overflow: hidden; */
+  overflow: hidden;
   display:block;
   width:100%;
   font-size: 1.6rem;
