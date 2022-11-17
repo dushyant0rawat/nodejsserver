@@ -74,18 +74,19 @@ console.log = (function(debug) {
 
 //full download of .mp4 doesn't work on iphone and ipad
 if(req.method == 'POST') {
+    const url = req.url === "/" ? "fountain.html" : req.url;
     processPost(req, res, function(){
         console.log("data from the post is:",req.post);
         // Use request.post here
         if(req.post.type==="insert"){
-          mongoInsert(req.post);
+          mongoInsert(url, req.post);
         } else if(req.post.type==="update"){
-        mongoUpdate(req.post);
+        mongoUpdate(url,req.post);
         } else if(req.post.type==="delete"){
-        mongoDelete(req.post);
+        mongoDelete(url, req.post);
       } else if(req.post.type==="get"){
         console.log("url is:",req.url);
-        return mongoGet(res,function(data) {
+        return mongoGet(url,res,function(data) {
           console.log("response callback",typeof data, data);
           res.writeHead(200, { 'content-type': 'application/text'});
           res.write(data);
@@ -194,9 +195,9 @@ function processPost(req, res, callback) {
     }
 }
 
-function mongoInsert(data){
+function mongoInsert(url,data){
 
- mongo.maindbInsert(data)
+ mongo.maindbInsert(url,data)
  .then(console.log("successful then"))
  .catch((err) => {
    console.log("error from insert is :",err);
@@ -207,9 +208,9 @@ function mongoInsert(data){
 
 }
 
-function mongoDelete(data){
+function mongoDelete(url,data){
 
- mongo.maindbDelete(data)
+ mongo.maindbDelete(url,data)
  .then(console.log("successful then"))
 
  .catch((err) => {
@@ -221,9 +222,9 @@ function mongoDelete(data){
 
 }
 
-function mongoUpdate(data){
+function mongoUpdate(url,data){
 
- mongo.maindbUpdate(data)
+ mongo.maindbUpdate(url,data)
  .then(console.log("successful then"))
  .catch((err) => {
    console.log("error from delete is :",err);
@@ -234,9 +235,9 @@ function mongoUpdate(data){
 
 }
 
-function mongoGet(res,callback){
+function mongoGet(url,res,callback){
 var data = [];
- mongo.maindbGet()
+ mongo.maindbGet(url)
  .then(async (cursor) => {
    await cursor.forEach(doc=> {
      data.push(doc);

@@ -4,27 +4,30 @@ const url = 'mongodb://localhost:27017/';
 const client = new MongoClient(url);
 const dbname = 'myMongoDb';
 const db = client.db(dbname);
-const collection = db.collection('documents');
 
-const maindbInsert = async function(data) {
-  const insertResult = await collection.insertOne({fountain: data.fountain});
+const maindbInsert = async function(url,data) {
+  const collection = db.collection(url);
+  const insertResult = await collection.insertOne({comment: data.comment});
   console.log('inserted documents =>',insertResult);
 }
 
-const maindbGet = async function() {
-  const cursor = await collection.find({},{ projection: { _id: 1, fountain: 1 }}).sort({_id:-1});
+const maindbGet = async function(url) {
+  const collection = db.collection(url);
+  const cursor = await collection.find({},{ projection: { _id: 1, comment: 1 }}).sort({_id:-1});
   return cursor;
 }
 
-const maindbUpdate = async function(data) {
+const maindbUpdate = async function(url,data) {
+  const collection = db.collection(url);
   const key = new ObjectId(data._id);
   const query = {_id: key};
-  var newValues = { $set: {fountain: data.fountain } };
+  var newValues = { $set: {comment: data.comment } };
   const updateResult = await collection.updateOne(query,newValues);
   console.log('update documents =>',updateResult);
 }
 
-const maindbDelete = async function(data) {
+const maindbDelete = async function(url,data) {
+  const collection = db.collection(url);
   console.log("key is:",data._id);
   const key = new ObjectId(data._id);
   const query = {_id: key};

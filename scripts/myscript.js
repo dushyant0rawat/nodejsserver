@@ -1,4 +1,23 @@
 
+console.log = (function(debug) {
+
+  var console_log = console.log;
+  // var timeStart = new Date().getTime();
+  return function() {
+      if(!debug) return;
+    // var delta = new Date().getTime() -timeStart ;
+    var currTime = new Date().toLocaleString();
+    var args = [];
+    // args.push((delta / 1000).toFixed(2) + ':');
+    args.push('[' + currTime + ']');
+    for(var i = 0; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+    console_log.apply(console, args);
+  };
+})(false);
+
+
 //document ready
 $(function() {
        console.log( "document loaded" );
@@ -15,7 +34,7 @@ $(function() {
 $(function(){
   $(".insert_comment_form").submit(function (e){
     e.preventDefault();
-    let formdata = $("#fountain").val();
+    let formdata = $("#comment").val();
     console.log("formdata is:",formdata);
      const pattern = /\w/;
      if(!pattern.test(formdata)){
@@ -23,11 +42,11 @@ $(function(){
        return false;
      }
     $.post("/",
-    {"type":"insert","fountain": formdata },
+    {"type":"insert","comment": formdata },
     function(data,status){
       console.log("response from submit form is",data,status);
       if(status ==='nocontent'){
-        $("#fountain").val('');
+        $("#comment").val('');
         $("#delete_update_comments_div").empty();
         getComments();
       }
@@ -44,7 +63,7 @@ function getComments(){
          let json = JSON.parse(data);
          console.log("data and status is", typeof json,json,status);
          for (let key in json) {
-           $("#delete_update_comments_div").append( createFormWithinDev(json,key));
+           $("#delete_update_comments_div").append( createForm(json,key));
          }
        } else {
          console.log("this is error in get request",data,status);
@@ -53,12 +72,12 @@ function getComments(){
 
 }
 
-function createFormWithinDev(json,key) {
+function createForm(json,key) {
   const form = ' <form class="delete_update_comments_form">' +
   ' <input type="text" value="' + json[key]._id +   '" class="displaynone">' +
   ' <button type="submit" value="update"><i class="fa-solid fa-pen-to-square"></i></button>' +
   ' <button type="submit" value="delete"><i class="fa-solid fa-trash"></i></button>' +
-  ' <textarea>' + json[key].fountain + '</textarea>' +
+  ' <textarea>' + json[key].comment + '</textarea>' +
   ' </form>';
 
    return form;
@@ -86,7 +105,7 @@ function bindForm(e){
         });
       } else {
         $.post("/",
-        {"type":"update", "_id": $(children[0]).val(), "fountain": $(children[3]).val()},
+        {"type":"update", "_id": $(children[0]).val(), "comment": $(children[3]).val()},
         function(data,status){
           console.log("response from submit form is",data,status);
           if(status ==="nocontent"){
@@ -98,7 +117,7 @@ function bindForm(e){
 }
 
 function resize() {
-  console.log("in resizetextara");
+  console.log("in resize textarea");
   const scrollHeight =$(this).prop('scrollHeight');
   const padding = $(this).innerHeight() - $(this).height();
   const newInnerHeight = scrollHeight- padding;
