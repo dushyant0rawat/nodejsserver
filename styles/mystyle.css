@@ -1,9 +1,42 @@
-.responsive {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+.video {
+  height: 80vh;
+  text-align: center;
+  box-sizing: content-box;
+
+}
+
+video {
+  height:100%;
+}
+
+.insert_comment_form, .delete_update_comments_form {
   width: 100%;
-  height: 100%;
+  margin: 1em 0;
+}
+
+ textarea {
+  resize: none;
+  margin: 0;
+  overflow: hidden;
+  display:block;
+  width:100%;
+  font-size: 1.6rem;
+  padding: 1em 1em;
+  box-sizing: border-box;
+}
+
+.displaynone {
+  display:none;
+}
+
+#delete_update_comments_div > div {
+  margin: 1em 1em;
+  border-radius: 5px;
+  border: thin solid black;
+  background: #edba76;
+}
+
+.fa-solid {
+  font-size: 3em;
+
 }

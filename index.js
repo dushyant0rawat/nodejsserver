@@ -2,19 +2,39 @@ var http = require('https');
 var fs = require('fs');
 var url = require('url');
 var path = require('path');
-// const requestIp = require('request-ip');
+var querystring = require('querystring');
+const mongo = require('./db/mongodb.js')
 
+
+const CHUNK_SIZE = 10 ** 6;
 const DEBUG = true;
-// console.log(module);
-this is test branch
 const port = 443;
 const options = {
   key: fs.readFileSync('dushyantrawat.com.key'),
   cert: fs.readFileSync('dushyantrawat.com.cer')
 };
+mongo.client.connect();
 
-const CHUNK_SIZE = 10 ** 6;
-const httpServer = http.createServer(options,function (req,res) {
+//immediately invoked function expression
+console.log = (function(debug) {
+
+  var console_log = console.log;
+  // var timeStart = new Date().getTime();
+  return function() {
+      if(!debug) return;
+    // var delta = new Date().getTime() -timeStart ;
+    var currTime = new Date().toLocaleString();
+    var args = [];
+    // args.push((delta / 1000).toFixed(2) + ':');
+    args.push('[' + currTime + ']');
+    for(var i = 0; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+    console_log.apply(console, args);
+  };
+})(DEBUG);
+
+ const httpServer = http.createServer(options,function (req,res) {
   console.log(`remote ip: ${req.headers['x-forwarded-for']} ${req.socket?.remoteAddress}` );
   console.log(`req method ${req.method}`);
   console.log(`req header content type ${req.headers['content-type']}`);
@@ -23,7 +43,7 @@ const httpServer = http.createServer(options,function (req,res) {
   // path.join normalizes the path
  let filePath = path.join(
         __dirname,
-        req.url === "/" ? "yt.html" : req.url
+        req.url === "/" ? "fountain.html" : req.url
     );
 
  let ext = path.extname(filePath);
@@ -51,20 +71,35 @@ const httpServer = http.createServer(options,function (req,res) {
    }
 
  console.log('url:' + req.url + '  filePath:' + filePath + '  ext:' + ext + ' contentType:' + contentType);
-// directory traversal
-// const  pathPattern = /^[a-z0-9]+$/
-// const pathCheck = pathPattern.test(req.url);
-// if(req.url === '/') {
-//
-// } else if (^pathCheck) {
-//    console.log("directory traversal")
-//    res.writeHead(404, { 'content-type': 'text/html' });
-//    res.end(`<h1>illegal characte in + ${req.url}</h1>`);
-//  }
 
 //full download of .mp4 doesn't work on iphone and ipad
+if(req.method == 'POST') {
+    processPost(req, res, function(){
+        console.log("data from the post is:",req.post);
+        // Use request.post here
+        if(req.post.type==="insert"){
+          mongoInsert(req.post);
+        } else if(req.post.type==="update"){
+        mongoUpdate(req.post);
+        } else if(req.post.type==="delete"){
+        mongoDelete(req.post);
+      } else if(req.post.type==="get"){
+        console.log("url is:",req.url);
+        return mongoGet(res,function(data) {
+          console.log("response callback",typeof data, data);
+          res.writeHead(200, { 'content-type': 'application/text'});
+          res.write(data);
+          res.end();
+        });
+      }
+        res.writeHead(204, "OK", {'Content-Type': 'text/plain'});
+        return res.end();
+    });
+    return ;
+}
 
 if (ext != ".mp4") {
+  console.log('reading the file',filePath);
   fs.readFile(filePath,function(err,data){
     if(err) {
       console.log('type of data:' + typeof data);
@@ -75,7 +110,7 @@ if (ext != ".mp4") {
       res.writeHead(200, { 'content-type': contentType});
       res.write(data);
     }
-   res.end();
+   return res.end();
   });
 } else {
   fs.stat(filePath, function(err, stats) {
@@ -93,10 +128,6 @@ if (ext != ".mp4") {
     }
     console.log("range is:" + range);
     var total = stats.size;
-    // let positions = range.replace(/bytes=/, "").split("-");
-    // let start = parseInt(positions[0], 10);
-    // let end = positions[1] ? parseInt(positions[1], 10) : total - 1;
-    // const end = Math.min(start + CHUNK_SIZE, total - 1);
     let [start,end] = range.replace(/bytes=/, "").split("-");
     start = parseInt(start, 10);
     end = end ? parseInt(end, 10) : total - 1;
@@ -130,27 +161,6 @@ if (ext != ".mp4") {
 });
 httpServer.listen(port, "0.0.0.0");
 
-//immediately invoked function expression
-console.log = (function(debug) {
-
-
-  var console_log = console.log;
-  // var timeStart = new Date().getTime();
-
-  return function() {
-      if(!debug) return;
-    // var delta = new Date().getTime() -timeStart ;
-    var currTime = new Date().toLocaleString();
-    var args = [];
-    // args.push((delta / 1000).toFixed(2) + ':');
-    args.push('[' + currTime + ']');
-    for(var i = 0; i < arguments.length; i++) {
-      args.push(arguments[i]);
-    }
-    console_log.apply(console, args);
-  };
-})(DEBUG);
-
 // Redirect from http port 80 to https
 var http = require('http');
 http.createServer(function (req, res) {
@@ -159,20 +169,91 @@ http.createServer(function (req, res) {
     res.end();
 }).listen(80, "0.0.0.0");
 
+function processPost(req, res, callback) {
+    var queryData = "";
+    if(typeof callback !== 'function') return null;
 
-// var https = require('https');
-// var fs = require('fs');
-//
-// const options = {
-//   key: fs.readFileSync('key.pem'),
-//   cert: fs.readFileSync('cert.pem')
-// };
-//
-// https.createServer(options,function (req,res) {
-//  fs.readFile('todos.json',function(err,data){
-//  res.writeHead(200, {'Content-Type': 'application/json'});
-//  res.write(data);
-//  return res.end();
-//  });
-//
-// }).listen(443, "0.0.0.0");
+    if(req.method == 'POST') {
+        req.on('data', function(data) {
+            queryData += data;
+            if(queryData.length > 1e6) {
+                queryData = "";
+                res.writeHead(413, {'Content-Type': 'text/plain'}).end();
+                req.connection.destroy();
+            }
+        });
+
+        req.on('end', function() {
+            req.post = querystring.parse(queryData);
+            callback();
+        });
+
+    } else {
+        res.writeHead(405, {'Content-Type': 'text/plain'});
+        res.end();
+    }
+}
+
+function mongoInsert(data){
+
+ mongo.maindbInsert(data)
+ .then(console.log("successful then"))
+ .catch((err) => {
+   console.log("error from insert is :",err);
+ })
+ .finally(()=> {
+
+ });
+
+}
+
+function mongoDelete(data){
+
+ mongo.maindbDelete(data)
+ .then(console.log("successful then"))
+
+ .catch((err) => {
+   console.log("error from delete is :",err);
+ })
+ .finally(()=> {
+
+ });
+
+}
+
+function mongoUpdate(data){
+
+ mongo.maindbUpdate(data)
+ .then(console.log("successful then"))
+ .catch((err) => {
+   console.log("error from delete is :",err);
+ })
+ .finally(()=> {
+
+ });
+
+}
+
+function mongoGet(res,callback){
+var data = [];
+ mongo.maindbGet()
+ .then(async (cursor) => {
+   await cursor.forEach(doc=> {
+     data.push(doc);
+   });
+ })
+ .catch((err) => {
+   console.log("err from get is :",err);
+ })
+ .finally(()=> {
+   console.log(data);
+   callback(JSON.stringify(data));
+ });
+
+}
+
+process.on('SIGINT',function(){
+  console.log('sigint by pressing crtl + C');
+  mongo.client.close();
+  process.exit();
+});
