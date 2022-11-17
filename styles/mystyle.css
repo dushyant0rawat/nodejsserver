@@ -10,14 +10,14 @@ video {
 }
 
 .insert_comment_form, .delete_update_comments_form {
-  width: 80%;
+  width: 100%;
   margin: 1em 0;
 }
 
  textarea {
   resize: none;
   margin: 0;
-  overflow: hidden;
+  /* overflow: hidden; */
   display:block;
   width:100%;
   font-size: 1.6rem;
@@ -34,4 +34,9 @@ video {
   border-radius: 5px;
   border: thin solid black;
   background: #edba76;
+}
+
+.fa-solid {
+  font-size: 3em;
+
 }
