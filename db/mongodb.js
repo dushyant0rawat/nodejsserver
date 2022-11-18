@@ -5,20 +5,20 @@ const client = new MongoClient(url);
 const dbname = 'myMongoDb';
 const db = client.db(dbname);
 
-const maindbInsert = async function(url,data) {
-  const collection = db.collection(url);
+const maindbInsert = async function(coll,data) {
+  const collection = db.collection(coll);
   const insertResult = await collection.insertOne({comment: data.comment});
   console.log('inserted documents =>',insertResult);
 }
 
-const maindbGet = async function(url) {
-  const collection = db.collection(url);
+const maindbGet = async function(coll) {
+  const collection = db.collection(coll);
   const cursor = await collection.find({},{ projection: { _id: 1, comment: 1 }}).sort({_id:-1});
   return cursor;
 }
 
-const maindbUpdate = async function(url,data) {
-  const collection = db.collection(url);
+const maindbUpdate = async function(coll,data) {
+  const collection = db.collection(coll);
   const key = new ObjectId(data._id);
   const query = {_id: key};
   var newValues = { $set: {comment: data.comment } };
@@ -26,8 +26,8 @@ const maindbUpdate = async function(url,data) {
   console.log('update documents =>',updateResult);
 }
 
-const maindbDelete = async function(url,data) {
-  const collection = db.collection(url);
+const maindbDelete = async function(coll,data) {
+  const collection = db.collection(coll);
   console.log("key is:",data._id);
   const key = new ObjectId(data._id);
   const query = {_id: key};

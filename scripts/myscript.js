@@ -15,7 +15,7 @@ console.log = (function(debug) {
     }
     console_log.apply(console, args);
   };
-})(false);
+})(true);
 
 
 //document ready

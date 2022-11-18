@@ -75,18 +75,21 @@ console.log = (function(debug) {
 //full download of .mp4 doesn't work on iphone and ipad
 if(req.method == 'POST') {
     const url = req.url === "/" ? "fountain.html" : req.url;
+    const coll = path.parse(url).name;
+
     processPost(req, res, function(){
         console.log("data from the post is:",req.post);
         // Use request.post here
+
         if(req.post.type==="insert"){
-          mongoInsert(url, req.post);
+          mongoInsert(coll, req.post);
         } else if(req.post.type==="update"){
-        mongoUpdate(url,req.post);
+        mongoUpdate(coll,req.post);
         } else if(req.post.type==="delete"){
-        mongoDelete(url, req.post);
+        mongoDelete(coll, req.post);
       } else if(req.post.type==="get"){
         console.log("url is:",req.url);
-        return mongoGet(url,res,function(data) {
+        return mongoGet(coll,res,function(data) {
           console.log("response callback",typeof data, data);
           res.writeHead(200, { 'content-type': 'application/text'});
           res.write(data);
@@ -166,6 +169,7 @@ httpServer.listen(port, "0.0.0.0");
 var http = require('http');
 http.createServer(function (req, res) {
     console.log("listening on port 80 and now redirecting to https");
+    console.log('local and remote port',req.socket.localPort,req.socket.remotePort);
     res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
     res.end();
 }).listen(80, "0.0.0.0");
@@ -195,9 +199,9 @@ function processPost(req, res, callback) {
     }
 }
 
-function mongoInsert(url,data){
+function mongoInsert(coll,data){
 
- mongo.maindbInsert(url,data)
+ mongo.maindbInsert(coll,data)
  .then(console.log("successful then"))
  .catch((err) => {
    console.log("error from insert is :",err);
@@ -208,9 +212,9 @@ function mongoInsert(url,data){
 
 }
 
-function mongoDelete(url,data){
+function mongoDelete(coll,data){
 
- mongo.maindbDelete(url,data)
+ mongo.maindbDelete(coll,data)
  .then(console.log("successful then"))
 
  .catch((err) => {
@@ -222,9 +226,9 @@ function mongoDelete(url,data){
 
 }
 
-function mongoUpdate(url,data){
+function mongoUpdate(coll,data){
 
- mongo.maindbUpdate(url,data)
+ mongo.maindbUpdate(coll,data)
  .then(console.log("successful then"))
  .catch((err) => {
    console.log("error from delete is :",err);
@@ -235,9 +239,9 @@ function mongoUpdate(url,data){
 
 }
 
-function mongoGet(url,res,callback){
+function mongoGet(coll,res,callback){
 var data = [];
- mongo.maindbGet(url)
+ mongo.maindbGet(coll)
  .then(async (cursor) => {
    await cursor.forEach(doc=> {
      data.push(doc);
