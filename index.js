@@ -75,31 +75,13 @@ console.log = (function(debug) {
 //full download of .mp4 doesn't work on iphone and ipad
 if(req.method == 'POST') {
     const url = req.url === "/" ? "fountain.html" : req.url;
-    const coll = path.parse(url).name;
+    req.coll = path.parse(url).name;
 
     processPost(req, res, function(){
         console.log("data from the post is:",req.post);
-        // Use request.post here
-
-        if(req.post.type==="insert"){
-          mongoInsert(coll, req.post);
-        } else if(req.post.type==="update"){
-        mongoUpdate(coll,req.post);
-        } else if(req.post.type==="delete"){
-        mongoDelete(coll, req.post);
-      } else if(req.post.type==="get"){
-        console.log("url is:",req.url);
-        return mongoGet(coll,res,function(data) {
-          console.log("response callback",typeof data, data);
-          res.writeHead(200, { 'content-type': 'application/text'});
-          res.write(data);
-          res.end();
-        });
-      }
-        res.writeHead(204, "OK", {'Content-Type': 'text/plain'});
-        return res.end();
+        dbResult(req,res);
     });
-    return ;
+    return;
 }
 
 if (ext != ".mp4") {
@@ -199,63 +181,32 @@ function processPost(req, res, callback) {
     }
 }
 
-function mongoInsert(coll,data){
+function dbResult(req,res){
 
- mongo.maindbInsert(coll,data)
- .then(console.log("successful then"))
- .catch((err) => {
-   console.log("error from insert is :",err);
- })
- .finally(()=> {
+   let data = [];
 
- });
-
-}
-
-function mongoDelete(coll,data){
-
- mongo.maindbDelete(coll,data)
- .then(console.log("successful then"))
-
- .catch((err) => {
-   console.log("error from delete is :",err);
- })
- .finally(()=> {
-
- });
-
-}
-
-function mongoUpdate(coll,data){
-
- mongo.maindbUpdate(coll,data)
- .then(console.log("successful then"))
- .catch((err) => {
-   console.log("error from delete is :",err);
- })
- .finally(()=> {
-
- });
-
-}
-
-function mongoGet(coll,res,callback){
-var data = [];
- mongo.maindbGet(coll)
- .then(async (cursor) => {
-   await cursor.forEach(doc=> {
-     data.push(doc);
+   mongo.dbCall(req,res)
+   .then(async (result) => {
+     if(req.post.type ==="get" ) {
+       await result.forEach(doc=> {
+       data.push(doc);
+     });
+   }
+   })
+   .catch((err) => {
+     console.log("err from get is :",err,req.post.type);
+   })
+   .finally(()=> {
+     if(req.post.type ==="get" ) {
+       res.writeHead(200, { 'content-type': 'application/text'});
+       res.write(JSON.stringify(data));
+     } else {
+       res.writeHead(204, "OK", {'Content-Type': 'text/plain'});
+     }
+     res.end();
    });
- })
- .catch((err) => {
-   console.log("err from get is :",err);
- })
- .finally(()=> {
-   console.log(data);
-   callback(JSON.stringify(data));
- });
-
 }
+
 
 process.on('SIGINT',function(){
   console.log('sigint by pressing crtl + C');

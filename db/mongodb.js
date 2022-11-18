@@ -5,39 +5,32 @@ const client = new MongoClient(url);
 const dbname = 'myMongoDb';
 const db = client.db(dbname);
 
-const maindbInsert = async function(coll,data) {
-  const collection = db.collection(coll);
-  const insertResult = await collection.insertOne({comment: data.comment});
-  console.log('inserted documents =>',insertResult);
-}
-
-const maindbGet = async function(coll) {
-  const collection = db.collection(coll);
-  const cursor = await collection.find({},{ projection: { _id: 1, comment: 1 }}).sort({_id:-1});
-  return cursor;
-}
-
-const maindbUpdate = async function(coll,data) {
-  const collection = db.collection(coll);
-  const key = new ObjectId(data._id);
+const dbCall = async function(req,res){
+  const collection = db.collection(req.coll);
+  const key = typeof req.post._id === 'undefined' ? "": new ObjectId(req.post._id);
   const query = {_id: key};
-  var newValues = { $set: {comment: data.comment } };
-  const updateResult = await collection.updateOne(query,newValues);
-  console.log('update documents =>',updateResult);
+  let result = '';
+  switch(req.post.type) {
+    case "delete":
+
+      result = await collection.deleteOne(query);
+      break;
+    case "update":
+      const newValues = { $set: {comment: req.post.comment } };
+      result = await collection.updateOne(query,newValues);
+      break;
+    case "insert":
+      result = await collection.insertOne({comment: req.post.comment});
+      break;
+    case "get":
+      result = await collection.find({},{ projection: { _id: 1, comment: 1 }}).sort({_id:-1});
+      break;
+    default:
+      // code block
+  }
+
+  return result;
 }
 
-const maindbDelete = async function(coll,data) {
-  const collection = db.collection(coll);
-  console.log("key is:",data._id);
-  const key = new ObjectId(data._id);
-  const query = {_id: key};
-  const deleteResult = await collection.deleteOne(query);
-  console.log('deleted documents =>',deleteResult);
-}
-
-
-exports.maindbInsert = maindbInsert;
-exports.maindbGet = maindbGet;
-exports.maindbUpdate = maindbUpdate;
-exports.maindbDelete = maindbDelete;
 exports.client = client;
+exports.dbCall = dbCall;
