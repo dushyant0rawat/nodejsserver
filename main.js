@@ -3,7 +3,7 @@ var fs = require('fs');
 var url = require('url');
 var path = require('path');
 var querystring = require('querystring');
-const mongo = require('./db/mongodb.js')
+const mongo = require('./app/mongodb.js')
 
 
 const CHUNK_SIZE = 10 ** 6;
@@ -41,9 +41,24 @@ console.log = (function(debug) {
   console.log(`req headers ${req.headers}`);
   // console.log(`ip from request-ip is ${requestIp.getClientIp(req)}`);
   // path.join normalizes the path
+
+  switch(req.url.replace('/','')){
+    case '':
+            req.url = "/public/views/fountain.html";
+            break;
+    case 'bird':
+            req.url = "/public/views/bird.html";
+            break;
+    case 'fountain':
+            req.url = "/public/views/fountain.html";
+            break;
+    default:
+
+  }
+
  let filePath = path.join(
         __dirname,
-        req.url === "/" ? "fountain.html" : req.url
+        req.url
     );
 
  let ext = path.extname(filePath);
@@ -74,11 +89,11 @@ console.log = (function(debug) {
 
 //full download of .mp4 doesn't work on iphone and ipad
 if(req.method == 'POST') {
-    const url = req.url === "/" ? "fountain.html" : req.url;
-    req.coll = path.parse(url).name;
+    // req.coll = path.parse(req.url).name;
+    req.coll = "comments";
 
     processPost(req, res, function(){
-        console.log("data from the post is:",req.post);
+        console.log("data from the post is:",req.coll,req.post);
         dbResult(req,res);
     });
     return;

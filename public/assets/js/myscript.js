@@ -21,6 +21,7 @@ console.log = (function(debug) {
 //document ready
 $(function() {
        console.log( "document loaded" );
+       src = $("video source").prop("src");
        getComments();
         $( "#delete_update_comments_div" ).on("customEvent",function(){
           console.log("customEvent triggered");
@@ -29,9 +30,11 @@ $(function() {
        $( "#delete_update_comments_div" ).on("keyup keydown focus",'textarea',resize);
        $( ".insert_comment_form" ).on("keyup keydown focus",'textarea',resize);
        $("#delete_update_comments_div" ).trigger("customEvent");
+
 });
 
 $(function(){
+
   $(".insert_comment_form").submit(function (e){
     e.preventDefault();
     let formdata = $("#comment").val();
@@ -41,8 +44,9 @@ $(function(){
        console.log("validation failed");
        return false;
      }
-    $.post("/",
-    {"type":"insert","comment": formdata },
+
+    $.post('/',
+    {"type":"insert","comment": formdata, "src": src},
     function(data,status){
       console.log("response from submit form is",data,status);
       if(status ==='nocontent'){
@@ -55,8 +59,8 @@ $(function(){
 });
 
 function getComments(){
-  $.post("/",
-       {"type":"get" },
+  $.post( '/',
+       {"type":"get", "src": src},
        function(data, status){
         console.log("data and status is", data,status);
        if(status==='success'){
