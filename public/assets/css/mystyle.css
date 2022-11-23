@@ -29,11 +29,21 @@ video {
   display:none;
 }
 
-#delete_update_comments_div > div {
+#delete_update_comments_div > div  {
   margin: 1em 1em;
   border-radius: 5px;
   border: thin solid black;
   background: #edba76;
+}
+
+ #videoList > div {
+  margin: 1em auto;
+  width: 20%;
+  opacity : 1;
+}
+
+#videoList > div:hover {
+ opacity : .8;
 }
 
 .fa-solid {
