@@ -2,9 +2,9 @@ div.video {
   width : 70%;
   height: 0px;
   position: relative;
-  padding-top: 124.44%;
+  /* padding is % of width 70*3/2. 3/2 is the aspect ratio of video on phone */
+  padding-top: 100.05%;
   margin: 2em auto;
-
 }
 
 div.video video {
@@ -46,8 +46,9 @@ div.video video {
   width : 70%;
   height: 0px;
   position: relative;
-  padding-top: 124.44%;
-  margin: 2em auto;
+  /* padding is % of width 70*3/2. 3/2 is the aspect ratio of video on phone */
+  padding-top: 100.05%;
+  margin: 20px auto;
 }
 
 /* text-align:center and margin: 0 auto = both center the content */
