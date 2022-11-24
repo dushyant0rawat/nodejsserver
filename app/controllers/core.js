@@ -20,20 +20,8 @@ exports.handleRequest = function (req,res) {
         __dirname,
         '/public/views/'
     );
-const url = req.url.replace('/','');
- switch(url) {
-   case '':
-           req.url = "/public/views/home.html";
-           break;
-   case 'bird':
-           req.url = "/public/views/bird.html";
-           break;
-   case 'fountain':
-           req.url = "/public/views/fountain.html";
-           break;
-   default:
+ req.url = getUrl(req.url);
 
- }
 
 // __dirname is current directory and process global object cwd() is project directory
 let filePath = path.join(
@@ -71,7 +59,7 @@ console.log('url:' + req.url + '  filePath:' + filePath + '  ext:' + ext + ' con
 //full download of .mp4 doesn't work on iphone and ipad
 if(req.method == 'POST') {
    // req.coll = path.parse(req.url).name;
-   if(req.url === "/videoList") {
+   if(req.url === "/videoList.js") {
      let filePath = path.join(
              process.cwd(),
             "/public/assets/videos/"
@@ -226,4 +214,26 @@ if (ext != ".mp4") {
      }
      res.end();
    });
+}
+
+function getUrl(url) {
+ let newUrl = ';'
+ let ext = path.extname(url);
+ let basename = path.basename(url);
+ if( ext ==='' && basename === ''){
+    newUrl = "/public/views/home.html";
+    return newUrl;
+ }
+ switch(ext) {
+   case '':
+           newUrl = "/public/views/" + basename + ".html";
+           break;
+   case 'html':
+           newUrl= "/public/views/" + basename;
+           break;
+   default:
+           newUrl = url;
+
+ }
+  return newUrl;
 }

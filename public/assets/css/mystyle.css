@@ -1,12 +1,18 @@
-.video {
-  height : 80vh;
-  text-align: center;
-  box-sizing: content-box;
+div.video {
+  width : 70%;
+  height: 0px;
+  position: relative;
+  padding-top: 124.44%;
+  margin: 2em auto;
 
 }
 
-.video video {
-  height : 100%;
+div.video video {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .insert_comment_form, .delete_update_comments_form {
@@ -36,19 +42,26 @@
   background: #edba76;
 }
 
- #videoList > div {
-  height: 80vh;
-  margin : 1em 0;
-  /* text-align: center; */
+ div#videoList > div {
+  width : 70%;
+  height: 0px;
+  position: relative;
+  padding-top: 124.44%;
+  margin: 2em auto;
 }
 
 /* text-align:center and margin: 0 auto = both center the content */
+/* object-fit property for replaced elements similiar to box-sizing for normal elements */
 #videoList  video {
- height:100%;
+ width: 100%;
+ height: 100%;
+ position: absolute;
+ top: 0;
+ left: 0;
  opacity : 1;
- display: block;
- margin: 0 auto;
- object-fit: cover;
+ /* display: block;
+ margin: 0 auto; */
+ /* object-fit: cover; */
 }
 
 #videoList > video:hover {

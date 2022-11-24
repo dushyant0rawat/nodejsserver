@@ -21,12 +21,9 @@ console.log = (function(debug) {
 //document ready
 $(function() {
        console.log( "document loaded" );
-
-        getVideoList();
-
-        $( "#videoList" ).on("loadedmetadata","video",play);
         $( "#videoList" ).on("click","video",openVideo);
-
+        $( "#videoList" ).on("customevent loadeddata loadedmetadata play pause","video",play);
+        getVideoList();
 
 });
 
@@ -53,7 +50,7 @@ function getVideoList(){
   //  });
 
    let request = $.ajax({
-     url: "/videoList",
+     url: "/videoList.js",
      method: "POST",
    })
    .done(function(data){
@@ -62,15 +59,16 @@ function getVideoList(){
      for (let key in json) {
        $("#videoList").append( createVideoDiv(json,key));
      }
-     $( "video" ).on("loadeddata",play);
+     $("video").trigger("customevent");
+
    });
 
 
 }
 
 function createVideoDiv(json,key) {
-  const div =  '<div  > ' +
-   '<video preload="metadata" muted > ' +
+  const div =  '<div> ' +
+   '<video preload="metadata" muted> ' +
   '<source src=' + json[key].file + ' type="video/mp4">' +
     'Your browser does not support the video tag.' +
   '</video>' +
@@ -86,33 +84,21 @@ function openVideo() {
   const source = $(this).find("source").prop("src");
   const sourceArray = source.split(/[\/\.]/);
   if(sourceArray.slice(-1)[0]=== "mp4") {
-    switch(sourceArray.slice(-2)[0]){
-      case "20210517_194126":
-          location.href = "fountain";
-          break;
-      case "20221117_125047":
-          location.href = "bird";
-          break;
-      default:
-          break;
-
-    }
-
-
+    location.href = sourceArray.slice(-2)[0];
   }
 
 
 }
 
-function play()
+// Category: Event Object
+// jQuery's event system normalizes the event object according to W3C standards. The event object is guaranteed to be passed to the event handler.
+
+function play(e)
 {
-  console.log("play function fired");
+  console.log("play function fired","event object is",e);
   const vid = $(this)[0];
 
-  if (vid.readyState >=2) {
-    console.log("video element in readystate");
-  }
-  if(vid.canplay){
-  vid.play();
-}
+  console.log("video element in readystate","rs:",vid.readyState,"canplay",vid.canPlayType('video/mp4'));
+  // vid.play();
+
 }
