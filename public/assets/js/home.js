@@ -62,15 +62,15 @@ function getVideoList(){
      for (let key in json) {
        $("#videoList").append( createVideoDiv(json,key));
      }
-     $( "video" ).on("loadedmetadata",play);
+     $( "video" ).on("loadeddata",play);
    });
 
 
 }
 
 function createVideoDiv(json,key) {
-  const div =  '<div class="video" > ' +
-   '<video id="myVideo" preload="metadata" muted > ' +
+  const div =  '<div  > ' +
+   '<video preload="metadata" muted > ' +
   '<source src=' + json[key].file + ' type="video/mp4">' +
     'Your browser does not support the video tag.' +
   '</video>' +

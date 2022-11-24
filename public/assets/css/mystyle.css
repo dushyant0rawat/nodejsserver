@@ -1,12 +1,12 @@
 .video {
-  height: 80vh;
+  height : 80vh;
   text-align: center;
   box-sizing: content-box;
 
 }
 
-video {
-  height:100%;
+.video video {
+  height : 100%;
 }
 
 .insert_comment_form, .delete_update_comments_form {
@@ -37,12 +37,21 @@ video {
 }
 
  #videoList > div {
-  margin: 1em auto;
-  width: 20%;
-  opacity : 1;
+  height: 80vh;
+  margin : 1em 0;
+  /* text-align: center; */
 }
 
-#videoList > div:hover {
+/* text-align:center and margin: 0 auto = both center the content */
+#videoList  video {
+ height:100%;
+ opacity : 1;
+ display: block;
+ margin: 0 auto;
+ object-fit: cover;
+}
+
+#videoList > video:hover {
  opacity : .8;
 }
 
