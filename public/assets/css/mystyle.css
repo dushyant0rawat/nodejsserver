@@ -1,9 +1,21 @@
+html {
+  --width : 80%;
+  --ratio : 1.2;
+}
+
+@media screen and (min-width: 769px)  {
+  html {
+    --width : 400px;
+    --ratio : 1.2;
+  }
+}
+
 div.video {
-  width : 70%;
+  width : calc(var(--width));
   height: 0px;
   position: relative;
   /* padding is % of width 70*3/2. 3/2 is the aspect ratio of video on phone */
-  padding-top: 100.05%;
+  padding-top: calc(var(--width)*var(--ratio));
   margin: 2em auto;
 }
 
@@ -43,11 +55,11 @@ div.video video {
 }
 
  div#videoList > div {
-  width : 70%;
+  width : calc(var(--width));
   height: 0px;
   position: relative;
   /* padding is % of width 70*3/2. 3/2 is the aspect ratio of video on phone */
-  padding-top: 100.05%;
+  padding-top: calc(var(--width)*var(--ratio));
   margin: 20px auto;
 }
 

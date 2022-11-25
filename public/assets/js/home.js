@@ -21,6 +21,7 @@ console.log = (function(debug) {
 //document ready
 $(function() {
        console.log( "document loaded" );
+       console.log("width and height are",screen.width,screen.height);
         $( "#videoList" ).on("click","video",openVideo);
         $( "#videoList" ).on("customevent loadeddata loadedmetadata play pause","video",play);
         getVideoList();
