@@ -69,7 +69,7 @@ function getVideoList(){
 
 function createVideoDiv(json,key) {
   const div =  '<div> ' +
-   '<video preload="metadata" muted> ' +
+   '<video playsinline preload="metadata" muted> ' +
   '<source src=' + json[key].file + ' type="video/mp4">' +
     'Your browser does not support the video tag.' +
   '</video>' +
@@ -94,12 +94,14 @@ function openVideo() {
 // Category: Event Object
 // jQuery's event system normalizes the event object according to W3C standards. The event object is guaranteed to be passed to the event handler.
 
+// playsinline is required on video for iphone otherwise blank poster will show up
+// call play on the video to show video on iphone
 function play(e)
 {
   console.log("play function fired","event object is",e);
   const vid = $(this)[0];
 
   console.log("video element in readystate","rs:",vid.readyState,"canplay",vid.canPlayType('video/mp4'));
-  // vid.play();
+  vid.play();
 
 }
