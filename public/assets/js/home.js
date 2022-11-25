@@ -21,9 +21,13 @@ console.log = (function(debug) {
 //document ready
 $(function() {
        console.log( "document loaded" );
-       console.log("width and height are",screen.width,screen.height);
         $( "#videoList" ).on("click","video",openVideo);
-        $( "#videoList" ).on("customevent loadeddata loadedmetadata play pause","video",play);
+        /* https://www.w3.org/2010/05/video/mediaevents.html
+         helps to undertands how video are fired */
+
+        /*triggered customevent because video events (loadeddata loadedmetadata play pause) are not triggered for some reason
+        */
+        $( "#videoList" ).on("customevent","video",play);
         getVideoList();
 
 });
@@ -61,6 +65,8 @@ function getVideoList(){
        $("#videoList").append( createVideoDiv(json,key));
      }
      $("video").trigger("customevent");
+     // $("video").trigger("play");
+
 
    });
 
@@ -69,7 +75,7 @@ function getVideoList(){
 
 function createVideoDiv(json,key) {
   const div =  '<div> ' +
-   '<video playsinline preload="metadata" muted> ' +
+   '<video playsinline muted> ' +
   '<source src=' + json[key].file + ' type="video/mp4">' +
     'Your browser does not support the video tag.' +
   '</video>' +
@@ -98,10 +104,31 @@ function openVideo() {
 // call play on the video to show video on iphone
 function play(e)
 {
-  console.log("play function fired","event object is",e);
+  console.log("play function","event object is",e);
   const vid = $(this)[0];
+  console.log("video element in readystate","rs:",vid.readyState,"canplay",vid.canPlayType('video/mp4'),"paused",vid.paused);
+  if(vid.paused){
+    vid.play();
+  }
 
-  console.log("video element in readystate","rs:",vid.readyState,"canplay",vid.canPlayType('video/mp4'));
-  vid.play();
+
+}
+
+function pause(e)
+{
+  console.log("pause function","event object is",e);
+  const vid = $(this)[0];
+  console.log("video element in readystate","rs:",vid.readyState,"canplay",vid.canPlayType('video/mp4'),"play",vid.play);
+  if(vid.play){
+    vid.pause();
+  }
+
+}
+
+function load(e)
+{
+  console.log("load function","event object is",e);
+  const vid = $(this)[0];
+  vid.load();
 
 }
