@@ -79,8 +79,8 @@ function getComments(){
 function createForm(json,key) {
   const form = ' <form class="delete_update_comments_form">' +
   ' <input type="text" value="' + json[key]._id +   '" class="displaynone">' +
-  ' <button type="submit" value="update"><i class="fa-solid fa-pen-to-square"></i></button>' +
-  ' <button type="submit" value="delete"><i class="fa-solid fa-trash"></i></button>' +
+  ' <button type="submit" value="update"><i class="material-icons">edit</i></button>' +
+  ' <button type="submit" value="delete"><i class="material-icons">delete</i></button>' +
   ' <textarea>' + json[key].comment + '</textarea>' +
   ' </form>';
 
