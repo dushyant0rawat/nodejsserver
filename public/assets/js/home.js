@@ -91,7 +91,7 @@ function openVideo() {
   const source = $(this).find("source").prop("src");
   const sourceArray = source.split(/[\/\.]/);
   if(sourceArray.slice(-1)[0]=== "mp4") {
-    location.href = sourceArray.slice(-2)[0];
+    location.href = "?v=" + sourceArray.slice(-2)[0];
   }
 
 

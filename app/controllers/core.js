@@ -16,11 +16,7 @@ exports.handleRequest = function (req,res) {
  // console.log(`ip from request-ip is ${requestIp.getClientIp(req)}`);
  // path.join normalizes the path
 
- let filePath1 = path.join(
-        __dirname,
-        '/public/views/'
-    );
- req.url = getUrl(req.url);
+ getUrl(req);
 
 
 // __dirname is current directory and process global object cwd() is project directory
@@ -99,7 +95,7 @@ if(req.method == 'POST') {
 
 if (ext != ".mp4") {
  console.log('reading the file',filePath);
- fs.readFile(filePath,function(err,data){
+ fs.readFile(filePath,'utf8',function(err,data){
    if(err) {
      console.log('type of data:' + typeof data);
      console.log(`error occured in reading file ${filePath}`);
@@ -107,6 +103,9 @@ if (ext != ".mp4") {
      res.write('<h1>error loading page</h1>');
    } else {
      res.writeHead(200, { 'content-type': contentType});
+     if(req.videoSource !== undefined){
+       data=data.replace(/<source src="replaceme"/g,'<source src="/public/assets/videos/' + req.videoSource + '"');
+     }
      res.write(data);
    }
   return res.end();
@@ -216,24 +215,28 @@ if (ext != ".mp4") {
    });
 }
 
-function getUrl(url) {
- let newUrl = ';'
- let ext = path.extname(url);
- let basename = path.basename(url);
+function getUrl(req) {
+ let ext = path.extname(req.url);
+ let basename = path.basename(req.url);
  if( ext ==='' && basename === ''){
-    newUrl = "/public/views/home.html";
-    return newUrl;
+    req.url = "/public/views/home.html";
+    return;
+ }
+ if(req.url.search(/\?v=/) != -1 ){
+   req.videoSource = req.url.split("?v=").splice(-1)[0] + ".mp4";
+   req.url = "/public/views/videoTemplate.html";
+   return;
  }
  switch(ext) {
    case '':
-           newUrl = "/public/views/" + basename + ".html";
+           req.url = "/public/views/" + basename + ".html";
            break;
    case 'html':
-           newUrl= "/public/views/" + basename;
+           req.url= "/public/views/" + basename;
            break;
    default:
-           newUrl = url;
+           break;
 
  }
-  return newUrl;
+
 }
