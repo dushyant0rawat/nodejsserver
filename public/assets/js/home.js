@@ -102,20 +102,33 @@ function openVideo() {
 
 // playsinline is required on video for iphone otherwise blank poster will show up
 // call play on the video to show video on iphone
-function play(e)
-{
+ /*ref: https://developer.chrome.com/blog/play-request-was-interrupted/ helped resolve the issue
+ Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause()
+ play() returns promise */
+function play(e) {
   console.log("play function","event object is",e);
   const vid = $(this)[0];
   console.log("video element in readystate","rs:",vid.readyState,"canplay",vid.canPlayType('video/mp4'),"paused",vid.paused);
   if(vid.paused){
-    vid.play();
+    console.log("video playing",vid);
+    vid.play()
+    .then(() => {
+      setTimeout(function(){
+        if(vid.play){
+          console.log("video paused",vid);
+          vid.pause();
+        }
+      },1000);
+    })
+    .catch( () => {
+      console.log("caught error in pausing video");
+    });
   }
 
 
 }
 
-function pause(e)
-{
+function pause(e) {
   console.log("pause function","event object is",e);
   const vid = $(this)[0];
   console.log("video element in readystate","rs:",vid.readyState,"canplay",vid.canPlayType('video/mp4'),"play",vid.play);
@@ -125,8 +138,7 @@ function pause(e)
 
 }
 
-function load(e)
-{
+function load(e) {
   console.log("load function","event object is",e);
   const vid = $(this)[0];
   vid.load();
