@@ -95,9 +95,14 @@ textarea:hover {
  /* object-fit: cover; */
 }
 
+button:has( ~ textarea) {
+  display:none;
+}
 
+button:has( ~ textarea:focus)  {
+  display: inline;
+}
 
 .fa-solid {
   font-size: 3em;
-
 }
