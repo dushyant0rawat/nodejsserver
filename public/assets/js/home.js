@@ -1,10 +1,9 @@
 
 console.log = (function(debug) {
-
   var console_log = console.log;
   // var timeStart = new Date().getTime();
   return function() {
-      if(!debug) return;
+    if(!debug) return;
     // var delta = new Date().getTime() -timeStart ;
     var currTime = new Date().toLocaleString();
     var args = [];
@@ -17,18 +16,17 @@ console.log = (function(debug) {
   };
 })(true);
 
-
 //document ready
 $(function() {
-       console.log( "document loaded" );
-        $( "#videoList" ).on("click","video",openVideo);
-        /* https://www.w3.org/2010/05/video/mediaevents.html
-         helps to undertands how video are fired */
+  console.log( "document loaded" );
+  $( "#videoList" ).on("click","video",openVideo);
+  /* https://www.w3.org/2010/05/video/mediaevents.html
+  helps to undertands how video are fired */
 
-        /*triggered customevent because video events (loadeddata loadedmetadata play pause) are not triggered for some reason
-        */
-        $( "#videoList" ).on("customevent","video",play);
-        getVideoList();
+  /*triggered customevent because video events (loadeddata loadedmetadata play pause) are not triggered for some reason
+  */
+  $( "#videoList" ).on("customevent","video",play);
+  getVideoList();
 
 });
 
@@ -54,34 +52,30 @@ function getVideoList(){
   //    $("#videoList").text(`${xhr.status} ${xhr.statusText} ${xhr.responseText}`);
   //  });
 
-   let request = $.ajax({
-     url: "/videoList.js",
-     method: "POST",
+  let request = $.ajax({
+    url: "/videoList.js",
+    method: "POST",
    })
    .done(function(data){
-     let json = JSON.parse(data);
-     console.log("data and status is", typeof json,json,status);
-     for (let key in json) {
-       $("#videoList").append( createVideoDiv(json,key));
-     }
-     $("video").trigger("customevent");
-     // $("video").trigger("play");
-
-
+    let json = JSON.parse(data);
+    console.log("data and status is", typeof json,json,status);
+    for (let key in json) {
+      $("#videoList").append( createVideoDiv(json,key));
+    }
+    $("video").trigger("customevent");
+    // $("video").trigger("play");
    });
-
-
 }
 
 function createVideoDiv(json,key) {
-  const div =  '<div> ' +
-   '<video playsinline muted> ' +
-  '<source src=' + json[key].file + ' type="video/mp4">' +
-    'Your browser does not support the video tag.' +
-  '</video>' +
-  '</div>' ;
+  const div =  `<div>
+  <video playsinline muted>
+  <source src="${json[key].file}"  type="video/mp4">
+  'Your browser does not support the video tag.'
+  </video>
+  </div>` ;
 
-   return div
+  return div
 }
 
 function openVideo() {
@@ -93,18 +87,15 @@ function openVideo() {
   if(sourceArray.slice(-1)[0]=== "mp4") {
     location.href = "?v=" + sourceArray.slice(-2)[0];
   }
-
-
 }
 
 // Category: Event Object
 // jQuery's event system normalizes the event object according to W3C standards. The event object is guaranteed to be passed to the event handler.
-
 // playsinline is required on video for iphone otherwise blank poster will show up
 // call play on the video to show video on iphone
- /*ref: https://developer.chrome.com/blog/play-request-was-interrupted/ helped resolve the issue
- Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause()
- play() returns promise */
+/*ref: https://developer.chrome.com/blog/play-request-was-interrupted/ helped resolve the issue
+  Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause()
+  play() returns promise */
 function play(e) {
   console.log("play function","event object is",e);
   const vid = $(this)[0];
@@ -124,8 +115,6 @@ function play(e) {
       console.log("caught error in pausing video");
     });
   }
-
-
 }
 
 function pause(e) {
@@ -135,12 +124,10 @@ function pause(e) {
   if(vid.play){
     vid.pause();
   }
-
 }
 
 function load(e) {
   console.log("load function","event object is",e);
   const vid = $(this)[0];
   vid.load();
-
 }

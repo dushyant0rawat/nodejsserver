@@ -13,7 +13,6 @@ const dbCall = async function(req,res){
   let result = '';
   switch(req.post.type) {
     case "delete":
-
       result = await collection.deleteOne(query);
       break;
     case "update":

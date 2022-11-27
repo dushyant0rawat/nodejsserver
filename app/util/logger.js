@@ -1,4 +1,3 @@
-
 const DEBUG = true;
 //immediately invoked function expression
 exports.console_log = (function(debug) {
@@ -6,7 +5,7 @@ exports.console_log = (function(debug) {
   var console_log = console.log;
   // var timeStart = new Date().getTime();
   return function() {
-      if(!debug) return;
+    if(!debug) return;
     // var delta = new Date().getTime() -timeStart ;
     var currTime = new Date().toLocaleString();
     var args = [];
