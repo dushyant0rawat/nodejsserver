@@ -20,12 +20,25 @@ console.log = (function(debug) {
 $(function() {
   console.log( "document loaded" );
   $( "#videoList" ).on("click","video",openVideo);
+
   /* https://www.w3.org/2010/05/video/mediaevents.html
   helps to undertands how video are fired */
 
   /*triggered customevent because video events (loadeddata loadedmetadata play pause) are not triggered for some reason
   */
   $( "#videoList" ).on("customevent","video",play);
+  $( "#videoList" ).on("mouseenter","video",function(){
+    const vid = $(this)[0];
+    if(vid.pause){
+      vid.play();
+    }
+  });
+  $( "#videoList" ).on("mouseleave","video",function(){
+    const vid = $(this)[0];
+    if(vid.play){
+      vid.pause();
+    }
+  });
   getVideoList();
 
 });
@@ -62,6 +75,8 @@ function getVideoList(){
     for (let key in json) {
       $("#videoList").append( createVideoDiv(json,key));
     }
+    // instead of poster attribute on video, play 1millisec of video by pausing
+    // after 1millisec so show image on iphone and not blank screen
     $("video").trigger("customevent");
     // $("video").trigger("play");
    });
@@ -69,7 +84,7 @@ function getVideoList(){
 
 function createVideoDiv(json,key) {
   const div =  `<div>
-  <video playsinline muted>
+  <video playsinline preload="metadata" muted>
   <source src="${json[key].file}"  type="video/mp4">
   'Your browser does not support the video tag.'
   </video>
@@ -109,7 +124,7 @@ function play(e) {
           console.log("video paused",vid);
           vid.pause();
         }
-      },1000);
+      },1);
     })
     .catch( () => {
       console.log("caught error in pausing video");
