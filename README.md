@@ -54,6 +54,6 @@ Host <host identifier, doesn't have to domain name, for example, myremotehost>
   IdentitiesOnly yes
 ```
 - login to the remote host using SSH command and host in the identity file using:<br>
-    ssh myremotehost  
+```ssh myremotehost```
 - using scp to copy files to remote hostname<br>
-    scp <local file> myremotehost:~<remote folder>
+```scp <local file> myremotehost:~<remote folder>```
