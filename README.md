@@ -45,11 +45,11 @@ remember to not use spaces in the directory name of the webroot otherwise client
 generate keys and store the private on the local computer and public key on the remote host  
 create an identity file with name config on the local computer in the signed user directory in folder .ssh  
 the structure of the identity file is:  
-`Host <host identifier, doesn't have to domain name, for example, myremotehost>
-    HostName <ip address>
-    User <user name on the remote host>
-    Port <port>
-    IdentityFile <location of the private key file, for example, ~/.ssh/id_rsa
+`Host <host identifier, doesn't have to domain name, for example, myremotehost>  
+    HostName <ip address>  
+    User <user name on the remote host>  
+    Port <port>  
+    IdentityFile <location of the private key file, for example, ~/.ssh/id_rsa  
     IdentitiesOnly yes`   
 
 login to the remote host using SSH command and host in the identity file using:  
@@ -57,4 +57,4 @@ ssh myremotehost
 
 using scp to copy files to remote hostname
 
-scp <local file> myremotehost:~<remote folder>
+`scp <local file> myremotehost:~<remote folder>`
